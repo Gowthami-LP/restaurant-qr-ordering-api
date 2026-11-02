@@ -58,12 +58,15 @@ class TableUpdate(BaseModel):
         le=20,
     )
 
-    status: Literal[
-        "available",
-        "occupied",
-        "reserved",
-        "inactive",
-    ] | None = None
+    status: (
+        Literal[
+            "available",
+            "occupied",
+            "reserved",
+            "inactive",
+        ]
+        | None
+    ) = None
 
 
 class TableResponse(BaseModel):

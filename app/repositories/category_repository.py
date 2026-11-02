@@ -95,8 +95,6 @@ class CategoryRepository:
         Delete a category.
         """
 
-        result = self.collection.delete_one(
-            {"category_id": category_id}
-        )
+        result = self.collection.delete_one({"category_id": category_id})
 
         return result.deleted_count > 0

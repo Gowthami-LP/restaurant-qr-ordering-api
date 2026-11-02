@@ -33,26 +33,19 @@ class TableService:
         """
 
         # Verify that the restaurant exists.
-        restaurant = self.restaurant_repository.get_by_id(
-            data.restaurant_id
-        )
+        restaurant = self.restaurant_repository.get_by_id(data.restaurant_id)
 
         if restaurant is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Restaurant "
-                    f"{data.restaurant_id} not found"
-                ),
+                detail=(f"Restaurant " f"{data.restaurant_id} not found"),
             )
 
         # Check whether the restaurant already has
         # this table number.
-        existing_table = (
-            self.repository.get_by_restaurant_and_number(
-                data.restaurant_id,
-                data.table_number,
-            )
+        existing_table = self.repository.get_by_restaurant_and_number(
+            data.restaurant_id,
+            data.table_number,
         )
 
         if existing_table:
@@ -66,16 +59,12 @@ class TableService:
             )
 
         # Get all existing tables.
-        existing_tables = self.repository.get_all(
-            data.restaurant_id
-        )
+        existing_tables = self.repository.get_all(data.restaurant_id)
 
         # Generate the next table ID.
         table_number_for_id = len(existing_tables) + 1
 
-        table_id = (
-            f"TABLE{table_number_for_id:03d}"
-        )
+        table_id = f"TABLE{table_number_for_id:03d}"
 
         # Generate a secure random token.
         #
@@ -106,9 +95,7 @@ class TableService:
         Optionally filter by restaurant_id.
         """
 
-        return self.repository.get_all(
-            restaurant_id
-        )
+        return self.repository.get_all(restaurant_id)
 
     def get_table(
         self,
@@ -118,9 +105,7 @@ class TableService:
         Return one table.
         """
 
-        table = self.repository.get_by_id(
-            table_id
-        )
+        table = self.repository.get_by_id(table_id)
 
         if table is None:
             raise HTTPException(
@@ -143,9 +128,7 @@ class TableService:
         existing_table = self.get_table(table_id)
 
         # Get only fields supplied by the client.
-        update_data = data.model_dump(
-            exclude_unset=True
-        )
+        update_data = data.model_dump(exclude_unset=True)
 
         if not update_data:
             raise HTTPException(
@@ -157,20 +140,14 @@ class TableService:
         # check for duplicates.
         if "table_number" in update_data:
 
-            duplicate = (
-                self.repository
-                .get_by_restaurant_and_number(
-                    existing_table["restaurant_id"],
-                    update_data["table_number"],
-                )
+            duplicate = self.repository.get_by_restaurant_and_number(
+                existing_table["restaurant_id"],
+                update_data["table_number"],
             )
 
             # Make sure the duplicate isn't the
             # same table we're currently updating.
-            if (
-                duplicate
-                and duplicate["table_id"] != table_id
-            ):
+            if duplicate and duplicate["table_id"] != table_id:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail=(
@@ -181,14 +158,20 @@ class TableService:
                 )
 
         # Update timestamp.
-        update_data["updated_at"] = (
-            datetime.now(timezone.utc)
-        )
+        update_data["updated_at"] = datetime.now(timezone.utc)
 
-        return self.repository.update(
+        updated_table = self.repository.update(
             table_id,
             update_data,
         )
+
+        if updated_table is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Table {table_id} not found",
+            )
+
+        return updated_table
 
     def delete_table(
         self,
@@ -201,9 +184,7 @@ class TableService:
         # Make sure table exists.
         self.get_table(table_id)
 
-        deleted = self.repository.delete(
-            table_id
-        )
+        deleted = self.repository.delete(table_id)
 
         if not deleted:
             raise HTTPException(

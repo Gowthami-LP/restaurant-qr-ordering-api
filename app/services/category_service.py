@@ -37,17 +37,12 @@ class CategoryService:
         """
 
         # Verify restaurant exists.
-        restaurant = self.restaurant_repository.get_by_id(
-            data.restaurant_id
-        )
+        restaurant = self.restaurant_repository.get_by_id(data.restaurant_id)
 
         if restaurant is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Restaurant "
-                    f"{data.restaurant_id} not found"
-                ),
+                detail=(f"Restaurant " f"{data.restaurant_id} not found"),
             )
 
         # Prevent duplicate category names.
@@ -59,24 +54,15 @@ class CategoryService:
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=(
-                    f"Category '{data.name}' "
-                    f"already exists"
-                ),
+                detail=(f"Category '{data.name}' " f"already exists"),
             )
 
         # Generate category ID.
-        existing_categories = self.repository.get_all(
-            data.restaurant_id
-        )
+        existing_categories = self.repository.get_all(data.restaurant_id)
 
-        category_number = len(
-            existing_categories
-        ) + 1
+        category_number = len(existing_categories) + 1
 
-        category_id = (
-            f"CAT{category_number:03d}"
-        )
+        category_id = f"CAT{category_number:03d}"
 
         # Create MongoDB document.
         category = CategoryModel.create_document(
@@ -96,9 +82,7 @@ class CategoryService:
         Get all categories.
         """
 
-        return self.repository.get_all(
-            restaurant_id
-        )
+        return self.repository.get_all(restaurant_id)
 
     def get_category(
         self,
@@ -108,17 +92,12 @@ class CategoryService:
         Get one category.
         """
 
-        category = self.repository.get_by_id(
-            category_id
-        )
+        category = self.repository.get_by_id(category_id)
 
         if category is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Category "
-                    f"{category_id} not found"
-                ),
+                detail=(f"Category " f"{category_id} not found"),
             )
 
         return category
@@ -135,9 +114,7 @@ class CategoryService:
         # Verify category exists.
         self.get_category(category_id)
 
-        update_data = data.model_dump(
-            exclude_unset=True
-        )
+        update_data = data.model_dump(exclude_unset=True)
 
         if not update_data:
             raise HTTPException(
@@ -145,14 +122,20 @@ class CategoryService:
                 detail="No fields provided for update",
             )
 
-        update_data["updated_at"] = (
-            datetime.now(timezone.utc)
-        )
+        update_data["updated_at"] = datetime.now(timezone.utc)
 
-        return self.repository.update(
+        updated_category = self.repository.update(
             category_id,
             update_data,
         )
+
+        if updated_category is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Category {category_id} not found",
+            )
+
+        return updated_category
 
     def delete_category(
         self,
@@ -164,15 +147,10 @@ class CategoryService:
 
         self.get_category(category_id)
 
-        deleted = self.repository.delete(
-            category_id
-        )
+        deleted = self.repository.delete(category_id)
 
         if not deleted:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Category "
-                    f"{category_id} not found"
-                ),
+                detail=(f"Category " f"{category_id} not found"),
             )

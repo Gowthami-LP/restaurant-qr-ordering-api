@@ -1,26 +1,17 @@
 from fastapi import FastAPI
 
 from app.config.settings import settings
-from app.routes.category_routes import (
-	router as category_router,
-)
+from app.routes.category_routes import router as category_router
 from app.routes.health_routes import router as health_router
-from app.routes.restaurant_routes import (
-	router as restaurant_router,
-)
-from app.routes.table_routes import (
-	router as table_router,
-)
-from app.routes.menu_item_routes import (
-	router as menu_item_router,
-)
-
+from app.routes.menu_item_routes import router as menu_item_router
+from app.routes.restaurant_routes import router as restaurant_router
+from app.routes.table_routes import router as table_router
 
 # Create the FastAPI application.
 app = FastAPI(
-	title=settings.app_name,
-	description="Backend API for QR-based restaurant ordering",
-	version="1.0.0",
+    title=settings.app_name,
+    description="Backend API for QR-based restaurant ordering",
+    version="1.0.0",
 )
 
 
@@ -42,13 +33,11 @@ app.include_router(menu_item_router)
 
 @app.get("/")
 def root():
-	"""
-	Root endpoint.
+    """
+    Root endpoint.
 
-	Used to verify that the API application
-	itself is running.
-	"""
+    Used to verify that the API application
+    itself is running.
+    """
 
-	return {
-		"message": "Restaurant QR Ordering API is running"
-	}
+    return {"message": "Restaurant QR Ordering API is running"}

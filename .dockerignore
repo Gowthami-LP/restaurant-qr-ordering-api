@@ -1,0 +1,14 @@
+.git
+.github
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+__pycache__
+*.py[cod]
+.coverage
+coverage.xml
+.env
+tests
+qr_codes

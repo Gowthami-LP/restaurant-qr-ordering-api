@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from decimal import Decimal
 
 from fastapi import HTTPException, status
 
@@ -31,12 +30,8 @@ class MenuItemService:
         category_repository: CategoryRepository,
     ):
         self.repository = repository
-        self.restaurant_repository = (
-            restaurant_repository
-        )
-        self.category_repository = (
-            category_repository
-        )
+        self.restaurant_repository = restaurant_repository
+        self.category_repository = category_repository
 
     def create_item(
         self,
@@ -47,48 +42,28 @@ class MenuItemService:
         """
 
         # Verify restaurant.
-        restaurant = (
-            self.restaurant_repository.get_by_id(
-                data.restaurant_id
-            )
-        )
+        restaurant = self.restaurant_repository.get_by_id(data.restaurant_id)
 
         if restaurant is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Restaurant "
-                    f"{data.restaurant_id} not found"
-                ),
+                detail=(f"Restaurant " f"{data.restaurant_id} not found"),
             )
 
         # Verify category.
-        category = (
-            self.category_repository.get_by_id(
-                data.category_id
-            )
-        )
+        category = self.category_repository.get_by_id(data.category_id)
 
         if category is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Category "
-                    f"{data.category_id} not found"
-                ),
+                detail=(f"Category " f"{data.category_id} not found"),
             )
 
         # Make sure category belongs to restaurant.
-        if (
-            category["restaurant_id"]
-            != data.restaurant_id
-        ):
+        if category["restaurant_id"] != data.restaurant_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
-                    "Category does not belong "
-                    "to this restaurant"
-                ),
+                detail=("Category does not belong " "to this restaurant"),
             )
 
         # Prevent duplicate item names.
@@ -100,16 +75,11 @@ class MenuItemService:
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=(
-                    f"Menu item '{data.name}' "
-                    f"already exists"
-                ),
+                detail=(f"Menu item '{data.name}' " f"already exists"),
             )
 
         # Generate ID.
-        existing_items = self.repository.get_all(
-            data.restaurant_id
-        )
+        existing_items = self.repository.get_all(data.restaurant_id)
 
         item_number = len(existing_items) + 1
 
@@ -149,17 +119,12 @@ class MenuItemService:
         Get one menu item.
         """
 
-        item = self.repository.get_by_id(
-            item_id
-        )
+        item = self.repository.get_by_id(item_id)
 
         if item is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Menu item "
-                    f"{item_id} not found"
-                ),
+                detail=(f"Menu item " f"{item_id} not found"),
             )
 
         return item
@@ -175,9 +140,7 @@ class MenuItemService:
 
         existing_item = self.get_item(item_id)
 
-        update_data = data.model_dump(
-            exclude_unset=True
-        )
+        update_data = data.model_dump(exclude_unset=True)
 
         if not update_data:
             raise HTTPException(
@@ -188,48 +151,38 @@ class MenuItemService:
         # If category changes, verify new category.
         if "category_id" in update_data:
 
-            category = (
-                self.category_repository.get_by_id(
-                    update_data["category_id"]
-                )
-            )
+            category = self.category_repository.get_by_id(update_data["category_id"])
 
             if category is None:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=(
-                        f"Category "
-                        f"{update_data['category_id']} "
-                        f"not found"
-                    ),
+                    detail=(f"Category " f"{update_data['category_id']} " f"not found"),
                 )
 
-            if (
-                category["restaurant_id"]
-                != existing_item["restaurant_id"]
-            ):
+            if category["restaurant_id"] != existing_item["restaurant_id"]:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        "Category does not belong "
-                        "to this restaurant"
-                    ),
+                    detail=("Category does not belong " "to this restaurant"),
                 )
 
         # Convert Decimal price to string.
         if "price" in update_data:
-            update_data["price"] = str(
-                update_data["price"]
-            )
+            update_data["price"] = str(update_data["price"])
 
-        update_data["updated_at"] = (
-            datetime.now(timezone.utc)
-        )
+        update_data["updated_at"] = datetime.now(timezone.utc)
 
-        return self.repository.update(
+        updated_item = self.repository.update(
             item_id,
             update_data,
         )
+
+        if updated_item is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Menu item {item_id} not found",
+            )
+
+        return updated_item
 
     def delete_item(
         self,
@@ -241,15 +194,10 @@ class MenuItemService:
 
         self.get_item(item_id)
 
-        deleted = self.repository.delete(
-            item_id
-        )
+        deleted = self.repository.delete(item_id)
 
         if not deleted:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Menu item "
-                    f"{item_id} not found"
-                ),
+                detail=(f"Menu item " f"{item_id} not found"),
             )

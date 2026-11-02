@@ -106,8 +106,6 @@ class TableRepository:
         Returns True when a table was deleted.
         """
 
-        result = self.collection.delete_one(
-            {"table_id": table_id}
-        )
+        result = self.collection.delete_one({"table_id": table_id})
 
         return result.deleted_count > 0

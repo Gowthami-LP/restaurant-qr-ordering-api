@@ -98,8 +98,6 @@ class MenuItemRepository:
         Delete a menu item.
         """
 
-        result = self.collection.delete_one(
-            {"item_id": item_id}
-        )
+        result = self.collection.delete_one({"item_id": item_id})
 
         return result.deleted_count > 0

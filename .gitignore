@@ -16,6 +16,9 @@ venv/
 # Test/cache
 .pytest_cache/
 .coverage
+coverage.xml
+.mypy_cache/
+.ruff_cache/
 
 # Generated QR codes
 qr_codes/

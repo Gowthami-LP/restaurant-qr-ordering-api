@@ -14,7 +14,6 @@ from app.schemas.table import (
 )
 from app.services.table_service import TableService
 
-
 router = APIRouter(
     prefix="/api/tables",
     tags=["Tables"],
@@ -29,18 +28,12 @@ def get_table_service() -> TableService:
     # MongoDB collections.
     table_collection = database["tables"]
 
-    restaurant_collection = database[
-        "restaurants"
-    ]
+    restaurant_collection = database["restaurants"]
 
     # Create repositories.
-    table_repository = TableRepository(
-        table_collection
-    )
+    table_repository = TableRepository(table_collection)
 
-    restaurant_repository = RestaurantRepository(
-        restaurant_collection
-    )
+    restaurant_repository = RestaurantRepository(restaurant_collection)
 
     # Create service.
     return TableService(
@@ -56,9 +49,7 @@ def get_table_service() -> TableService:
 )
 def create_table(
     data: TableCreate,
-    service: TableService = Depends(
-        get_table_service
-    ),
+    service: TableService = Depends(get_table_service),
 ):
     """
     Create a new restaurant table.
@@ -73,9 +64,7 @@ def create_table(
 )
 def get_tables(
     restaurant_id: str | None = None,
-    service: TableService = Depends(
-        get_table_service
-    ),
+    service: TableService = Depends(get_table_service),
 ):
     """
     Get all tables.
@@ -85,9 +74,7 @@ def get_tables(
     ?restaurant_id=REST001
     """
 
-    return service.get_all_tables(
-        restaurant_id
-    )
+    return service.get_all_tables(restaurant_id)
 
 
 @router.get(
@@ -96,9 +83,7 @@ def get_tables(
 )
 def get_table(
     table_id: str,
-    service: TableService = Depends(
-        get_table_service
-    ),
+    service: TableService = Depends(get_table_service),
 ):
     """
     Get one table by table_id.
@@ -114,9 +99,7 @@ def get_table(
 def update_table(
     table_id: str,
     data: TableUpdate,
-    service: TableService = Depends(
-        get_table_service
-    ),
+    service: TableService = Depends(get_table_service),
 ):
     """
     Update a table.
@@ -134,9 +117,7 @@ def update_table(
 )
 def delete_table(
     table_id: str,
-    service: TableService = Depends(
-        get_table_service
-    ),
+    service: TableService = Depends(get_table_service),
 ):
     """
     Delete a table.

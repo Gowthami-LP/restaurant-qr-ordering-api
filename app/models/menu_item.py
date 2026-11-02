@@ -28,13 +28,10 @@ class MenuItemModel:
             "category_id": category_id,
             "name": name,
             "description": description,
-
             # Convert Decimal to string for predictable
             # JSON/MongoDB handling in this learning project.
             "price": str(price),
-
             "is_available": True,
-
             "created_at": now,
             "updated_at": now,
         }

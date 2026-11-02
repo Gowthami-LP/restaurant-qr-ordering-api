@@ -16,7 +16,6 @@ from app.services.category_service import (
     CategoryService,
 )
 
-
 router = APIRouter(
     prefix="/api/categories",
     tags=["Categories"],
@@ -28,21 +27,13 @@ def get_category_service() -> CategoryService:
     Build the CategoryService with its dependencies.
     """
 
-    category_collection = database[
-        "categories"
-    ]
+    category_collection = database["categories"]
 
-    restaurant_collection = database[
-        "restaurants"
-    ]
+    restaurant_collection = database["restaurants"]
 
-    category_repository = CategoryRepository(
-        category_collection
-    )
+    category_repository = CategoryRepository(category_collection)
 
-    restaurant_repository = RestaurantRepository(
-        restaurant_collection
-    )
+    restaurant_repository = RestaurantRepository(restaurant_collection)
 
     return CategoryService(
         repository=category_repository,
@@ -57,9 +48,7 @@ def get_category_service() -> CategoryService:
 )
 def create_category(
     data: CategoryCreate,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     """
     Create a menu category.
@@ -74,9 +63,7 @@ def create_category(
 )
 def get_categories(
     restaurant_id: str | None = None,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     """
     Get categories.
@@ -86,9 +73,7 @@ def get_categories(
     /api/categories?restaurant_id=REST001
     """
 
-    return service.get_all_categories(
-        restaurant_id
-    )
+    return service.get_all_categories(restaurant_id)
 
 
 @router.get(
@@ -97,9 +82,7 @@ def get_categories(
 )
 def get_category(
     category_id: str,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     """
     Get one category.
@@ -115,9 +98,7 @@ def get_category(
 def update_category(
     category_id: str,
     data: CategoryUpdate,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     """
     Update category.
@@ -135,9 +116,7 @@ def update_category(
 )
 def delete_category(
     category_id: str,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     """
     Delete category.

@@ -19,7 +19,6 @@ from app.services.menu_item_service import (
     MenuItemService,
 )
 
-
 router = APIRouter(
     prefix="/api/menu-items",
     tags=["Menu Items"],
@@ -31,29 +30,17 @@ def get_menu_item_service() -> MenuItemService:
     Build MenuItemService dependencies.
     """
 
-    item_collection = database[
-        "menu_items"
-    ]
+    item_collection = database["menu_items"]
 
-    category_collection = database[
-        "categories"
-    ]
+    category_collection = database["categories"]
 
-    restaurant_collection = database[
-        "restaurants"
-    ]
+    restaurant_collection = database["restaurants"]
 
-    item_repository = MenuItemRepository(
-        item_collection
-    )
+    item_repository = MenuItemRepository(item_collection)
 
-    category_repository = CategoryRepository(
-        category_collection
-    )
+    category_repository = CategoryRepository(category_collection)
 
-    restaurant_repository = RestaurantRepository(
-        restaurant_collection
-    )
+    restaurant_repository = RestaurantRepository(restaurant_collection)
 
     return MenuItemService(
         repository=item_repository,
@@ -69,9 +56,7 @@ def get_menu_item_service() -> MenuItemService:
 )
 def create_menu_item(
     data: MenuItemCreate,
-    service: MenuItemService = Depends(
-        get_menu_item_service
-    ),
+    service: MenuItemService = Depends(get_menu_item_service),
 ):
     """
     Create a menu item.
@@ -87,9 +72,7 @@ def create_menu_item(
 def get_menu_items(
     restaurant_id: str | None = None,
     category_id: str | None = None,
-    service: MenuItemService = Depends(
-        get_menu_item_service
-    ),
+    service: MenuItemService = Depends(get_menu_item_service),
 ):
     """
     Get menu items.
@@ -115,9 +98,7 @@ def get_menu_items(
 )
 def get_menu_item(
     item_id: str,
-    service: MenuItemService = Depends(
-        get_menu_item_service
-    ),
+    service: MenuItemService = Depends(get_menu_item_service),
 ):
     """
     Get one menu item.
@@ -133,9 +114,7 @@ def get_menu_item(
 def update_menu_item(
     item_id: str,
     data: MenuItemUpdate,
-    service: MenuItemService = Depends(
-        get_menu_item_service
-    ),
+    service: MenuItemService = Depends(get_menu_item_service),
 ):
     """
     Update menu item.
@@ -153,9 +132,7 @@ def update_menu_item(
 )
 def delete_menu_item(
     item_id: str,
-    service: MenuItemService = Depends(
-        get_menu_item_service
-    ),
+    service: MenuItemService = Depends(get_menu_item_service),
 ):
     """
     Delete menu item.

@@ -1,0 +1,11 @@
+-r requirements.txt
+
+black
+isort
+ruff
+mypy
+bandit
+pip-audit
+pytest
+pytest-cov
+httpx
